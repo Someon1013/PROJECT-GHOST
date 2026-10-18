@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b0e13">
+  <title>PROJECT GHOST | Archive Interface</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0a0d12; --panel:#111823; --panel2:#17212c; --line:#2c3944; --ink:#e6ecec; --muted:#8b9ba6; --green:#add5ba; --red:#c77672; }
+    *{box-sizing:border-box} html{min-height:100%; background:var(--bg)}
+    body{margin:0; color:var(--ink); background:radial-gradient(circle at 5% 2%,#172524 0,transparent 38%), var(--bg);font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;letter-spacing:.005em;line-height:1.55}
+    body:before{content:"";pointer-events:none; position:fixed;inset:0;opacity:.15;background:repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, #000 4px);z-index:10}
+    .wrap{max-width:850px;margin:0 auto;padding:28px 18px 90px}
+    header{display:flex;justify-content:space-between;gap:18px;align-items:center;padding-bottom:20px;border-bottom:1px solid var(--line)}
+    .brand{font-weight:900;letter-spacing:.17em;font-size:clamp(20px,4vw,30px)} .brand small{display:block;font-size:11px;font-weight:400;letter-spacing:.3em;color:var(--green);margin-bottom:4px}
+    .status{text-align:right;color:var(--green);font-size:11px;letter-spacing:.06em}
+    .blink{display:inline-block;width:6px;height:6px;background:var(--green);border-radius:50%;margin-right:6px;box-shadow:0 0 14px var(--green)}
+    .alert{margin:18px 0 22px;border:1px solid #394943;background:#13221f;padding:12px 14px;font-size:12px;color:#b7c9c3}
+    .muted{color:var(--muted)} .tiny{font-size:11px;letter-spacing:.12em} .eyebrow{color:var(--green);font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:700}
+    h1{font-size:clamp(24px,5vw,39px);line-height:1.13;letter-spacing:-.045em;margin:8px 0 15px} h2{font-size:16px;margin:0 0 7px}
+    p{margin:9px 0 15px} .deck{color:#b5c0c6;max-width:68ch}
+    .stepstrip{display:flex;gap:8px;margin:23px 0 12px} .step{flex:1;border-top:3px solid #27333e;padding-top:8px;color:#73818b;font-size:10px;white-space:nowrap}.step.active{border-color:var(--green);color:var(--green)}.step.past{border-color:#638b77;color:#b6c6bc}
+    .case{border:1px solid var(--line);background:linear-gradient(160deg,rgba(21,30,40,.98),rgba(13,20,27,.98));padding:clamp(18px,5vw,34px);box-shadow:0 22px 75px #0005}
+    .case-head{display:flex;align-items:center;justify-content:space-between;gap:15px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:24px}.stamp{color:var(--red);border:1px solid #8c504e;padding:3px 8px;font-size:10px;letter-spacing:.1em;transform:rotate(-3deg)}
+    .evidence{background:#090f16;border-left:2px solid var(--green);padding:16px 17px;margin:20px 0; overflow-x:auto}
+    .evidence pre{font-family:inherit;font-size:clamp(12px,2.5vw,15px);line-height:1.8;margin:0;white-space:pre-wrap}
+    .evidence ul{margin:0;padding-left:22px} .evidence li{margin:5px 0}
+    .grid-wrap{overflow-x:auto;margin:14px 0}.audit{width:100%;border-collapse:collapse;min-width:400px;font-size:13px}.audit td,.audit th{border-bottom:1px solid #28353f;padding:10px;text-align:left}.audit th{color:var(--green);font-weight:500}.audit td:last-child{text-align:right}
+    .inputline{display:flex;gap:9px;flex-wrap:wrap;margin:20px 0 8px}
+    input{flex:1;min-width:175px;border:1px solid #3d515b;background:#0a1118;color:white;font:inherit;font-size:16px;padding:12px 13px;border-radius:0;outline:none;text-transform:uppercase} input:focus{border-color:var(--green);box-shadow:0 0 0 2px #8cb99d33}
+    button{border:1px solid #819f90;background:var(--green);color:#0b1a14;padding:11px 17px;cursor:pointer;font:inherit;font-size:12px;font-weight:700;letter-spacing:.06em}
+    button:hover{filter:brightness(1.08)} button:focus-visible{outline:2px solid #fff;outline-offset:3px}button.secondary{color:var(--green);background:transparent;border-color:#405b4c} button.tertiary{color:var(--muted);background:transparent;border-color:#26353e;font-size:11px}
+    .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.feedback{min-height:23px;color:var(--red);font-size:13px;padding-top:2px}
+    .progress{display:flex;gap:5px;margin:20px 0 0}.progress i{height:4px;background:#31424a;flex:1}.progress i.done{background:var(--green)}
+    footer{border-top:1px solid var(--line);margin-top:24px;padding-top:12px;display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+    .clue{padding:12px 14px;background:#172520;border:1px solid #49664f;margin-top:18px;font-size:13px;color:#d0e0d1}
+    .success{border:1px solid #486e59;background:linear-gradient(145deg,#183328,#10241d);padding:18px; margin-top:17px}.success .big{font-size:clamp(20px,4vw,32px);color:#d6f5dc;font-weight:900;letter-spacing:.1em}
+    .results{display:grid;gap:10px;margin:21px 0}.result{border:1px solid #34454b;padding:12px;background:#101b20}
+    .hint{color:#c4d9c9;font-size:13px;border:1px solid #405547;background:#15231c;padding:12px 13px;margin:9px 0}
+    .mark{color:var(--red);font-size:12px}
+    @media (max-width:530px){.wrap{padding-top:14px}.case{padding:17px}.step{white-space:normal;font-size:9px}header{align-items:start}.status{font-size:9px}}
+    @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header><div class="brand"><small>INTERNAL / EVIDENCE SYSTEM</small>PROJECT GHOST</div><div class="status"><span class="blink"></span>ARCHIVE CONNECTED<br><span class="muted">NOT AN OFFICIAL HALL SYSTEM</span></div></header>
+  <div class="alert">A fictional mystery game for Eusoff prank week. Nothing here represents a real campus incident, monitoring system, or security alert. Pause or stop any time.</div>
+  <div class="stepstrip" aria-label="Case progress"><div id="day1" class="step">01 / INVITATION</div><div id="day2" class="step">02 / FABRICATION</div><div id="day3" class="step">03 / AUTHOR</div></div>
+  <main class="case">
+    <div class="case-head"><span class="eyebrow" id="fileid">CASE / 001</span><span class="stamp" id="stateStamp">UNRESOLVED</span></div>
+    <div id="stage" aria-live="polite"></div>
+    <form id="answerForm" autocomplete="off">
+      <label for="answer" class="eyebrow" id="answerLabel">ACCESS CODE</label>
+      <div class="inputline"><input id="answer" type="text" spellcheck="false" autocapitalize="characters" autocomplete="off" placeholder="ENTER ANSWER" required maxlength="100"><button id="submit" type="submit">VERIFY &gt;</button></div>
+    </form>
+    <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+    <div class="actions" id="actionButtons"><button class="secondary" id="hintButton" type="button">REQUEST HINT</button></div>
+    <div id="hintArea"></div>
+    <div class="progress" id="progress" aria-label="Puzzle progress"></div>
+  </main>
+  <footer><div class="tiny muted">ARCHIVE BUILD 03.1 // FICTIONAL GAME</div><button type="button" class="tertiary" id="reset">RESET LOCAL PROGRESS</button></footer>
+</div>
+<script>
+"use strict";
+const GAME = {"game_id": "599e04375b0e3b7e", "facts": ["We first met at [replace with a shared, non-private place or activity].", "You have heard me say [replace with a recognizable harmless phrase].", "I am often associated with [replace with a distinctive safe detail]."], "reveal_location": "our agreed common-area meeting spot", "hashes": ["67d3e22ffdf32bc7b36655eb7f6141684e72affb304306eccb8a34f677626db4", "092c79e8f80e559e404bcf660c48f3522b67aba9ff1484b0367e1a4ddef7431d", "fcb1f6100676208c94f1a3ebc96790a3732b756855ef1e6cfb83cb4bc90cef80", "00154761637ca746c354a6d9cfbf1da1a92e79afa6bb127bb8a1c434e9c73170", "39200d1e8a8dbbb6d7bcea51e02b99f062d32a5f83151e8c5a9fab79576245dd", "0805ac9f491a32bf75224274cfdc7e38be703ea34d3a5c914773c42d07aeb61b", "bc6bfd848ebd7819c9a82bf124d65e7f739d08e002601e23bb906aacd40a3d81", "599e04375b0e3b7eb3c81a1d7fdb3dfb4cbf1a2a085f9998193a6d91327bb26e"]};
+const STORE = "project-ghost-v1:" + GAME.game_id;
+let state = {stage:0, hints:{}};
+try {const saved=JSON.parse(localStorage.getItem(STORE)); if(saved && Number.isInteger(saved.stage))state={stage:Math.min(8,Math.max(0,saved.stage)),hints:saved.hints||{}};} catch(_){}
+const $=id=>document.getElementById(id);
+const escapeHtml = value => String(value).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const normalize=value=>value.normalize("NFKC").trim().replace(/\s+/g," ").toLowerCase();
+async function sha256(value){
+  if(!globalThis.crypto || !crypto.subtle)throw new Error("Please open this game via HTTPS or localhost so the verifier can run.");
+  const bytes=new TextEncoder().encode(normalize(value));
+  const digest=await crypto.subtle.digest("SHA-256",bytes);
+  return Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,"0")).join("");
+}
+const answers=GAME.hashes;
+const puzzleHints=[
+  ["The printed invitation contains more than it says.","Read the first character of each of its six recovered statements."],
+  ["The lounge transmission uses a famous ancient substitution cipher.","Move every encrypted letter three positions BACK through the alphabet."],
+  ["The second-night access seal is not online.","Use the uppercase access word in the Day 2 physical packet."],
+  ["Check every digit in each timestamp, not just the hour.","For each row, add all four time digits; compare the final digit of the sum with the printed checksum."],
+  ["The grid is in your Day 2 paper packet, but the route is on this screen.","Start at row 1, column 2. Copy its letter. Move east, south, east, south, east, adding a letter after every move."],
+  ["The Day 3 envelope opens this sealed chapter.","Use the uppercase access word printed on the Day 3 card."],
+  ["Your previous answers form a three-entry dictionary.","1=ECHO, 2=MIRROR, 3=THREAD. Pair 1:2 means the second letter of ECHO. Read all seven pairs."],
+  ["This person knew the sequence before anyone else did.","Use the three identifying facts. Submit the person's name, not the codename GHOST."]
+];
+function save(){try{localStorage.setItem(STORE,JSON.stringify(state));}catch(_){}}
+function stageMarkup(s){
+  if(s===0)return {id:"ENTRY 001 / ACROSTIC",title:"An investigator has been selected.",desc:"An unmarked envelope named you as an investigator. The first six recovered statements contain a location. Enter that location to initiate the case.",evidence:`<div class="evidence"><div class="eyebrow">RECOVERED FILE / 001</div><p class="muted">The paper copy is the original. The digital text is a backup.</p><pre>Last night, a file appeared with no author.\nOnly the assigned investigator can open it.\nUnder every statement is a second message.\nNo witness has seen the archivist.\nGhosts cannot sign their own reports.\nEvery investigation begins at the beginning.</pre></div>`,label:"LOCATION / SIX LETTERS"};
+  if(s===1)return {id:"ENTRY 002 / TRANSMISSION",title:"The first physical trace.",desc:"Search the prearranged, permitted clue spot in a common lounge for the card marked TRANSMISSION 02. Its encoded message gives the next archive password. If the spot is unavailable, request the card directly from the organizer.",evidence:`<div class="evidence"><span class="eyebrow">FIELD NOTE</span><p>Words can be pushed forward. Meaning can be recovered by moving backward.</p><span class="muted tiny">THE NEXT ANSWER IS ON THE PHYSICAL CARD, NOT IN THIS SCREEN.</span></div>`,label:"TRANSMISSION PASSWORD"};
+  if(s===2)return {id:"ENTRY 003 / SEALED",title:"Day one has ended.",desc:"The evidence is too orderly. Someone designed the investigation to be discovered. Your next packet, labelled SECOND NIGHT, contains a physical access seal. Do not attempt to open this case before receiving it.",evidence:`<div class="evidence"><span class="eyebrow">OBSERVATION 01</span><p>Whoever placed the first envelope already knew its recipient.</p><p class="muted">The archive will reopen with the second packet.</p></div>`,label:"DAY 02 ACCESS SEAL"};
+  if(s===3)return {id:"ENTRY 004 / CORRUPTED LOG",title:"One record was forged.",desc:"The system's checksum is the LAST DIGIT of the sum of the four digits in the timestamp (HH:MM). Exactly one listed checksum is incorrect. Enter that record's CODENAME.",evidence:`<div class="evidence"><span class="eyebrow">EVENT LOG / RECOVERED</span><div class="grid-wrap"><table class="audit"><thead><tr><th>TIME</th><th>CODENAME</th><th>CHECKSUM</th></tr></thead><tbody><tr><td>12:57</td><td>COIL</td><td>5</td></tr><tr><td>09:26</td><td>CINDER</td><td>7</td></tr><tr><td>10:33</td><td>MIRROR</td><td>4</td></tr><tr><td>08:14</td><td>ASTRAL</td><td>3</td></tr><tr><td>11:45</td><td>VESPER</td><td>1</td></tr></tbody></table></div></div>`,label:"FORGED CODENAME"};
+  if(s===4)return {id:"ENTRY 005 / ROUTING",title:"Evidence has to be assembled.",desc:"The second packet includes a printed 5-by-5 routing grid. Read the starting square, then read the letter at every square visited by the route below. The six letters form the next password.",evidence:`<div class="evidence"><span class="eyebrow">ROUTE RECOVERY PROTOCOL</span><p><strong>START:</strong> ROW 1, COLUMN 2</p><p><strong>MOVE:</strong> EAST → SOUTH → EAST → SOUTH → EAST</p><p class="muted">Rows are counted from top to bottom; columns from left to right. The physical grid is not reproduced here.</p></div>`,label:"RECOVERED ROUTE WORD"};
+  if(s===5)return {id:"ENTRY 006 / SEALED",title:"The evidence points inwards.",desc:"Your last sealed envelope, marked ORIGIN, contains the Day 3 access word. It will unlock the final reconstruction. No new public location is required.",evidence:`<div class="evidence"><span class="eyebrow">OBSERVATION 02</span><p>The investigator, the clues, and the archive all have the same point of origin.</p><p class="muted">Every fabricated record requires someone to write it.</p></div>`,label:"DAY 03 ACCESS SEAL"};
+  if(s===6)return {id:"ENTRY 007 / INDEX",title:"Who created the evidence?",desc:"Every earlier password was also an index entry. Recover a seven-letter word using the numbered dictionary and the coordinates. Each pair is ENTRY:LETTER (count letters from 1).",evidence:`<div class="evidence"><span class="eyebrow">THE BURIED INDEX</span><pre>ENTRY 1 = Day 1 decoded transmission word\nENTRY 2 = Day 2 forged log codename\nENTRY 3 = Day 2 recovered route word\n\n1:2   2:3   1:1   3:5   3:1   1:4   2:6</pre><p class="muted">What seven-letter role do these coordinates spell?</p></div>`,label:"RECONSTRUCTED ROLE"};
+  if(s===7){const facts=GAME.facts.map((f,i)=>`<div class="result"><span class="eyebrow">TRACE 0${i+1}</span><div>${escapeHtml(f)}</div></div>`).join("");return {id:"ENTRY 008 / ACCUSATION",title:"GHOST was never the subject.",desc:"GHOST wrote the investigation. A person you know authored every stage and arranged the envelope delivery. The following three real-world clues identify that person. Enter their name to submit your accusation.",evidence:`<div class="evidence"><div class="eyebrow">IDENTITY CROSS-REFERENCE</div><div class="results">${facts}</div><p class="mark">The codename is not a valid answer. Identify the human author.</p></div>`,label:"SUSPECT NAME"};}
+  return {id:"CASE / CLOSED",title:"The author was inside the story.",desc:"Your accusation matched the archive. Every encoded message and planted document was part of one deliberately fictional investigation.",evidence:`<div class="success"><div class="eyebrow">ARCHIVE ACCEPTED / VERIFIED</div><div class="big">IDENTITY CONFIRMED</div><p>The final evidence is not digital. Meet at <strong id="meeting"></strong> for the reveal.</p><p>Case closed. GHOST has been unmasked.</p></div>`,label:""};
+}
+function render(){
+  const s=state.stage, obj=stageMarkup(s);
+  $("fileid").textContent=obj.id; $("stateStamp").textContent=s===8?"CLOSED":s===2||s===5?"SEALED":"UNRESOLVED";
+  $("stage").innerHTML=`<h1>${obj.title}</h1><p class="deck">${obj.desc}</p>${obj.evidence}`;
+  if(s===8){const meeting=$("meeting"); if(meeting)meeting.textContent=GAME.reveal_location;}
+  $("answerForm").hidden=s===8; $("actionButtons").hidden=s===8; $("answerLabel").textContent=obj.label;
+  $("answer").value=""; $("feedback").textContent=""; $("hintArea").innerHTML="";
+  $("progress").innerHTML=Array.from({length:8},(_,i)=>`<i class="${i<s?'done':''}"></i>`).join("");
+  const phase=s<=1?1:s<=4?2:3;
+  [1,2,3].forEach(d=>{$("day"+d).className="step "+(d<phase?"past":d===phase?"active":"")});
+  if(s===8){$("answer").blur();} else $("answer").focus({preventScroll:true});
+}
+$("answerForm").addEventListener("submit",async e=>{
+  e.preventDefault(); const s=state.stage, answer=$("answer").value; if(!answer.trim())return;
+  const submit=$("submit"); submit.disabled=true; $("feedback").textContent="CHECKING ARCHIVE...";
+  try {
+    const digest=await sha256(answer);
+    if(digest === answers[s]){state.stage++;save();render();window.scrollTo({top:0,behavior:"smooth"});}
+    else{$("feedback").textContent="REJECTED. The evidence does not support that answer.";}
+  } catch(err){$("feedback").textContent=err.message;}finally{submit.disabled=false;}
+});
+$("hintButton").addEventListener("click",()=>{
+  const s=state.stage; const k=String(s); const next=Math.min(2,(state.hints[k]||0)+1); state.hints[k]=next;save();
+  $("hintArea").innerHTML=`<div class="hint"><strong>HINT ${next}/2</strong> — ${escapeHtml(puzzleHints[s][next-1])}</div>`;
+});
+$("reset").addEventListener("click",()=>{if(confirm("Erase this device's case progress?")){state={stage:0,hints:{}};save();render();}});
+render();
+</script>
+</body>
+</html>
